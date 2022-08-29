@@ -21,7 +21,6 @@ const copyArr = (arr) => {
 };
 export default function App() {
   const [wordSpinnerState, setWordSpinnerState] = useState(true);
-  const [newGamePressed, setNewGamePressed] = useState(false);
   const [currentWord, setCurrentWord] = useState("");
   const [gameState, setGameState] = useState("playing");
   const [currentRow, setCurrentRow] = useState(0);
@@ -29,23 +28,27 @@ export default function App() {
   const [rows, setRows] = useState(
     new Array(NUMBER_OF_TRIES).fill(new Array(WORD_LENGTH).fill(""))
   );
-
-  useEffect(() => {
-    if (newGamePressed) {
-      axios.get("https://random-word-api.herokuapp.com/all").then((res) => {
-        const filtered = res.data.filter((word) => word.length === WORD_LENGTH);
-        setCurrentWord(filtered[Math.floor(Math.random() * 1000)]);
+  console.log(currentWord);
+  const getNewWord = () => {
+    axios
+      .get(
+        `https://random-word-api.herokuapp.com/word?number=1&length=${WORD_LENGTH}`
+      )
+      .then((res) => {
+        setCurrentWord(res.data[0]);
         setRows(
           new Array(NUMBER_OF_TRIES).fill(new Array(WORD_LENGTH).fill(""))
         );
         setCurrentRow(0);
         setCurrentColumn(0);
         setGameState("playing");
-        setNewGamePressed(false);
+        setWordSpinnerState(false);
       });
-    }
+  };
+  useEffect(() => {
+    getNewWord();
     setWordSpinnerState(false);
-  }, [newGamePressed]);
+  }, []);
 
   useEffect(() => {
     if (currentRow > 0) {
@@ -61,13 +64,12 @@ export default function App() {
       Alert.alert("Try Again!");
       setGameState("lost");
     }
-    setNewGamePressed(true);
   };
   const checkIfWon = () => {
     const row = rows[currentRow - 1];
-
     return row.every((letter, i) => letter === currentWord[i]);
   };
+
   const checkIfLost = () => {
     return currentRow === NUMBER_OF_TRIES;
   };
@@ -120,6 +122,13 @@ export default function App() {
       row.filter((cell, j) => getCellBgColor(i, j) === colors[color])
     );
   };
+
+  const handleNewGamePress = () => {
+    setWordSpinnerState(true);
+    getNewWord();
+    setCurrentColumn(0);
+    setCurrentRow(0);
+  };
   return (
     <SafeAreaView style={styles.outerContainer}>
       {(() => {
@@ -167,16 +176,11 @@ export default function App() {
                 ))}
               </ScrollView>
               <View style={styles.newGameButton}>
-                {newGamePressed && (
-                  <Button
-                    color={colors.black}
-                    title="New Game"
-                    onPress={() => {
-                      setNewGamePressed(true);
-                      setWordSpinnerState(true);
-                    }}
-                  />
-                )}
+                <Button
+                  color={colors.black}
+                  title="New Game"
+                  onPress={() => handleNewGamePress()}
+                />
               </View>
               <Keyboard
                 onKeyPressed={(key) => handleKeyPress(key)}
@@ -231,6 +235,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: colors.darkgrey,
     borderWidth: 2,
+    borderRadius: 15,
     maxWidth: 65,
     flex: 1,
     aspectRatio: 1,

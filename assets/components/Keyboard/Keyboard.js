@@ -32,7 +32,7 @@ const Keyboard = ({
           {keyRow.map((key) => (
             <TouchableOpacity
               onPress={() => onKeyPressed(key)}
-              disabled={greyCaps.includes(key)}
+              // disabled={greyCaps.includes(key)}
               key={key}
               style={[
                 styles.key,

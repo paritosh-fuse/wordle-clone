@@ -1,14 +1,14 @@
 {
   "expo": {
     "name": "wordle",
-    "slug": "wordle",
+    "slug": "Wordle",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/abc.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "image": "./assets/w.png",
+      "resizeMode": "center",
       "backgroundColor": "#ffffff"
     },
     "updates": {
